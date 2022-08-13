@@ -17,7 +17,6 @@ class Board
         list = Hash.new
         valid_coord = Array.new(8) {|i| i}
         valid_coord.repeated_permutation(2) {|permutation| list[permutation] = nil}
-        print_board()
         list.each {|k, v| list[k] = valid_moves(k)}
     end
 
@@ -26,10 +25,13 @@ class Board
     end
 
     def valid_moves(start)
-        # valid_ends = []
-        # @knight_offsets.map(start) {|row, column| }
-        
-        # @board.fetch(row + 1, []).fetch(col + 2, nil)
+        valid_ends = @knight_offsets.map do |offset|
+            row = start[0] + offset[0]
+            col = start[1] + offset[1] 
+            next if row < 0 || row > 7 || col < 0 || col > 7
+            [row, col]
+        end
+        valid_ends.compact
     end
 
     def print_board
