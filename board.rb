@@ -4,6 +4,9 @@ class Board
     def initialize
         @board = Array.new(8) {Array.new(8, 0)}
         @adjacency_list = create_list()
+        # so first < check always passes
+        @min_moves = 65
+        @move_list = []
     end
 
     def knight_offsets
@@ -20,16 +23,20 @@ class Board
         list.each {|k, v| list[k] = valid_moves(k, knight_offsets)}
     end
 
-    def knight_moves(start, fin, moves = 0, move_list = [start])
-        if @adjacency_list[start].include?(fin) 
-            moves += 1
-            move_list << fin
-            print_solution(moves, move_list, start, fin)
+    def knight_moves(start, fin)
+        search_list(start, fin)
+        print_solution()
+    end
+
+    def search_list(start, fin, moves = 0, temp_list = [start])
+        if @adjacency_list[start].include?(fin) && moves < @min_moves
+            @min_moves = moves + 1
+            temp_list << fin
+            @move_list = temp_list
             return
         end
-        # if it's not there, search the arrays of each possible move recursively
         @adjacency_list[start].each do |move|
-            knight_moves(move, fin, moves, move_list)
+            knight_moves(move, fin, moves, temp_list)
         end
     end
 
@@ -47,11 +54,11 @@ class Board
         @board.each {|row| puts row.join(" ")}
     end
 
-    def print_solution(moves, move_list, start, fin)
-        puts "You can reach #{fin} from #{start} in #{moves} move" if moves < 2
-        puts "You can reach #{fin} from #{start} in #{moves} moves" if moves > 1
+    def print_solution()
+        puts "You can reach #{@move_list.last} from #{@move_list.first} in #{@min_moves} move" if @min_moves < 2
+        puts "You can reach #{@move_list.last} from #{@move_list.first} in #{@min_moves} moves" if @min_moves > 1
         puts "Here's your path:"
-        move_list.each {|square| p square}
+        @move_list.each {|square| p square}
     end
 end
 
