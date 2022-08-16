@@ -39,18 +39,28 @@ class Board
         print_solution()
     end
 
-    def search_list(start, fin, moves = 0, temp_list = [start])
-        # FIXME: also, at some point it goes from 7,0 to 7,2 and 1,0 to 7,1. That shouldn't be possible
+    def search_list(start, fin, temp_list = [start])
+        # FIXME: makes moves not in list like 1,6 to 2,3 and 2,3 to 2,5
         @adjacency_list[start].each do |move|
-            next if temp_list.include?(move) || moves > @min_moves
-            moves += 1
-            temp_list << move
-            if move == fin && moves < @min_moves
-                @min_moves = moves.dup
-                @move_list = temp_list.dup
+            if temp_list.include?(move)
+                puts "Skipped to avoid loop"
                 next
             end
-            search_list(move, fin, moves, temp_list)
+            temp_list << move
+            if temp_list.length > @min_moves
+                puts "skipped as too long"
+                next
+            end
+            puts "Current moves are #{temp_list.length - 1}, temp list is #{temp_list}"
+            if move == fin && temp_list.length - 1 < @min_moves
+                # -1 because the first space is start, not a move
+                @min_moves = temp_list.length - 1
+                @move_list = temp_list.dup
+                puts "\nNew shortest found!\n"
+                puts "\nGlobal moves are #{@min_moves} and global list is #{@move_list}\n"
+                next
+            end
+            search_list(move, fin, temp_list.dup)
         end
     end
 
