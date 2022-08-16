@@ -4,6 +4,17 @@ class Board
     def initialize
         @board = Array.new(8) {Array.new(8, 0)}
         @adjacency_list = create_list()
+        start = get_input("start")
+        fin = get_input("end")
+        knight_moves(start, fin)
+    end
+
+    def create_list
+        list = Hash.new
+        valid_coord = Array.new(8) {|i| i}
+        knight_offsets = knight_offsets()
+        valid_coord.repeated_permutation(2) {|permutation| list[permutation] = nil}
+        list.each {|k, v| list[k] = valid_moves(k, knight_offsets)}
     end
 
     def knight_offsets
@@ -22,12 +33,12 @@ class Board
         valid_ends.compact
     end
 
-    def create_list
-        list = Hash.new
-        valid_coord = Array.new(8) {|i| i}
-        knight_offsets = knight_offsets()
-        valid_coord.repeated_permutation(2) {|permutation| list[permutation] = nil}
-        list.each {|k, v| list[k] = valid_moves(k, knight_offsets)}
+    def get_input(string)
+        puts "Which row will your knight #{string} on?"
+        row = gets.chomp.to_i
+        puts "Which column will your knight #{string} on?"
+        column = gets.chomp.to_i
+        [row, column]
     end
 
     def knight_moves(start, fin)
@@ -64,4 +75,3 @@ class Board
 end
 
 test = Board.new
-test.knight_moves([0, 0], [4, 6])
