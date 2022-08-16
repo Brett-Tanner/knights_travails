@@ -62,8 +62,8 @@ class Board
         path
     end
 
-    def print_board
-        @board.each {|row| puts row.join(" ")}
+    def print_board(board)
+        board.each {|row| puts row.join(" ")}
     end
 
     def print_solution(path)
@@ -71,6 +71,25 @@ class Board
         puts "You can reach #{path.last} from #{path.first} in #{path.length-1} moves" if path.length > 1
         puts "Here's your path:"
         path.each {|square| p square}
+        puts "Would you like a step by step visualisation?"
+        answer = gets.chomp.downcase
+        visualise(path) if answer == "y"
+        exit(0)
+    end
+
+    def visualise(path)
+        path.each_index do |step|
+            next if step == 0
+            puts "From 'k' to 'K'"
+            diagram = @board.map {|row| row.dup}
+            row = path[step][0]
+            col = path[step][1]
+            diagram[row][col] = "K"
+            o_row = path[step - 1][0]
+            o_col = path[step - 1][1]
+            diagram[o_row][o_col] = "k"
+            print_board(diagram)
+        end
     end
 end
 
