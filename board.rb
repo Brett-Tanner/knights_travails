@@ -4,10 +4,6 @@ class Board
     def initialize
         @board = Array.new(8) {Array.new(8, 0)}
         @adjacency_list = create_list()
-        @adjacency_list.each {|k, v| puts "#{k}: #{v}"}
-        # so first < check always passes
-        @min_moves = 65
-        @move_list = []
     end
 
     def knight_offsets
@@ -35,46 +31,37 @@ class Board
     end
 
     def knight_moves(start, fin)
-        search_list(start, fin)
-        print_solution()
+        path = search_list(start, fin)
+        print_solution(path)
     end
 
-    def search_list(start, fin, temp_list = [start])
-        # FIXME: makes moves not in list like 1,6 to 2,3 and 2,3 to 2,5
-        @adjacency_list[start].each do |move|
-            if temp_list.include?(move)
-                puts "Skipped to avoid loop"
-                next
+    def search_list(origin, fin, queue = [origin], checked = [origin])
+        @adjacency_list[origin].each do |move|
+            return [origin, move] if move == fin 
+            unless checked.include?(move)
+                queue << move
+                checked << move
             end
-            temp_list << move
-            if temp_list.length > @min_moves
-                puts "skipped as too long"
-                next
-            end
-            puts "Current moves are #{temp_list.length - 1}, temp list is #{temp_list}"
-            if move == fin && temp_list.length - 1 < @min_moves
-                # -1 because the first space is start, not a move
-                @min_moves = temp_list.length - 1
-                @move_list = temp_list.dup
-                puts "\nNew shortest found!\n"
-                puts "\nGlobal moves are #{@min_moves} and global list is #{@move_list}\n"
-                next
-            end
-            search_list(move, fin, temp_list.dup)
         end
+        queue.shift  
+        path = search_list(queue[0], fin, queue, checked)
+        if @adjacency_list[origin].include?(path[0])
+            path.unshift(origin)
+        end
+        path
     end
 
     def print_board
         @board.each {|row| puts row.join(" ")}
     end
 
-    def print_solution()
-        puts "You can reach #{@move_list.last} from #{@move_list.first} in #{@min_moves} move" if @min_moves < 2
-        puts "You can reach #{@move_list.last} from #{@move_list.first} in #{@min_moves} moves" if @min_moves > 1
+    def print_solution(path)
+        puts "You can reach #{path.last} from #{path.first} in #{path.length-1} move" if path.length < 2
+        puts "You can reach #{path.last} from #{path.first} in #{path.length-1} moves" if path.length > 1
         puts "Here's your path:"
-        @move_list.each {|square| p square}
+        path.each {|square| p square}
     end
 end
 
 test = Board.new
-test.knight_moves([0, 0], [2, 5])
+test.knight_moves([0, 0], [4, 6])
