@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Board
     attr_accessor :board
 
@@ -84,10 +86,10 @@ class Board
             diagram = @board.map {|row| row.dup}
             row = path[step][0]
             col = path[step][1]
-            diagram[row][col] = "K"
+            diagram[row][col] = "K".red
             o_row = path[step - 1][0]
             o_col = path[step - 1][1]
-            diagram[o_row][o_col] = "k"
+            diagram[o_row][o_col] = "k".green
             print_board(diagram)
         end
     end
